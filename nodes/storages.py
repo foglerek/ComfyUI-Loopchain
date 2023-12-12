@@ -151,7 +151,7 @@ class ImageToImageStorage:
         image = np.array(image).astype(np.float32) / 255.0
         image = torch.from_numpy(image)[None,]
 
-        GLOBAL_IMAGE_STORAGE[key] = image
+        GLOBAL_IMAGE_STORAGE[key] = [image]
 
         return ()
 
