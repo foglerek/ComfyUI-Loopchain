@@ -262,6 +262,7 @@ class LatentStorageReset:
 NODE_CLASS_MAPPINGS = {
     "ImageStorageImport": ImageStorageImport,
     "ImageStorageExportLoop": ImageStorageExportLoop,
+    "ImageStorageExport": ImageStorageExport,
     "ImageStorageReset": ImageStorageReset,
     "FolderToImageStorage": FolderToImageStorage,
     "LatentStorageImport": LatentStorageImport,
