@@ -85,7 +85,7 @@ class ImageStorageExport:
     def execute(self, key, opt_pipeline=None):
         key = key.strip()
         assert GLOBAL_IMAGE_STORAGE[key], f"Image storage {key} doesn't exist."
-        return (list(GLOBAL_IMAGE_STORAGE[key]))
+        return (list(GLOBAL_IMAGE_STORAGE[key]),)
 
     @classmethod
     def IS_CHANGED():
