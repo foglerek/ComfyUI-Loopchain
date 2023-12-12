@@ -122,6 +122,54 @@ class ImageStorageReset:
 
 IMAGE_EXTENSIONS = ('.ras', '.xwd', '.bmp', '.jpe', '.jpg', '.jpeg', '.xpm', '.ief', '.pbm', '.tif', '.gif', '.ppm', '.xbm', '.tiff', '.rgb', '.pgm', '.png', '.pnm', 'webp')
 
+class ImageToImageStorage:
+    @classmethod
+    def INPUT_TYPES(s):
+        input_dir = folder_paths.get_input_directory()
+        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+        return {
+            "required": {
+                "key": ("STRING", {"multiline": False}),
+                "image": (sorted(files), {"image_upload": True})
+            },
+            "optional": {
+                "pipeline": ("LOOPCHAIN_PIPELINE", )
+            }
+        }
+
+    CATEGORY = "Loopchain/storage"
+    RETURN_TYPES = ()
+    OUTPUT_NODE = True
+    FUNCTION = "load_image"
+
+    def load_image(self, key, image):
+        key = key.strip()
+        image_path = folder_paths.get_annotated_filepath(image)
+        i = Image.open(image_path)
+        i = ImageOps.exif_transpose(i)
+        image = i.convert("RGB")
+        image = np.array(image).astype(np.float32) / 255.0
+        image = torch.from_numpy(image)[None,]
+
+        GLOBAL_IMAGE_STORAGE[key] = image
+
+        return ()
+
+    @classmethod
+    def IS_CHANGED(s, image):
+        image_path = folder_paths.get_annotated_filepath(image)
+        m = hashlib.sha256()
+        with open(image_path, 'rb') as f:
+            m.update(f.read())
+        return m.digest().hex()
+
+    @classmethod
+    def VALIDATE_INPUTS(s, image):
+        if not folder_paths.exists_annotated_filepath(image):
+            return "Invalid image file: {}".format(image)
+
+        return True
+
 class FolderToImageStorage:
     @classmethod
     def INPUT_TYPES(s):
@@ -158,11 +206,6 @@ class FolderToImageStorage:
             image = i.convert("RGB")
             image = np.array(image).astype(np.float32) / 255.0
             image = torch.from_numpy(image)[None,]
-            if 'A' in i.getbands():
-                mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
-                mask = 1. - torch.from_numpy(mask)
-            else:
-                mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
 
             GLOBAL_IMAGE_STORAGE[key].append(image)
 
@@ -264,6 +307,7 @@ NODE_CLASS_MAPPINGS = {
     "ImageStorageExportLoop": ImageStorageExportLoop,
     "ImageStorageExport": ImageStorageExport,
     "ImageStorageReset": ImageStorageReset,
+    "ImageToImageStorage": ImageToImageStorage,
     "FolderToImageStorage": FolderToImageStorage,
     "LatentStorageImport": LatentStorageImport,
     "LatentStorageExportLoop": LatentStorageExportLoop,
