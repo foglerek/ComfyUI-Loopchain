@@ -23,7 +23,7 @@ export const ImageStorageExportLoop = {
         }
     },
     whenCreated(node, app) {
-        const getLoopNum = async () => {
+        const getLoopNum = async (key, batchSize) => {
             const { result: numLoop } = await fetch(`/loopchain/dataloader_length?type=image&key=${key.value}&batch_size=${batchSize.value}`)
               .then(re => re.json())
             return numLoop;
@@ -40,7 +40,7 @@ export const ImageStorageExportLoop = {
                 loopPreview.value = 'Iteration: Idle';
                 app.canvas.setDirty(true);
 
-                let numLoop = await getLoopNum();
+                let numLoop = await getLoopNum(key, batchSize);
                 if (numLoop === -1) {
                     loopPreview.value = `"${key.value}" not found. 🤔`
                     return;
@@ -56,7 +56,7 @@ export const ImageStorageExportLoop = {
                     await executeAndWaitForLoopchain(app, node);
 
                     // Check for new data added to key
-                    numLoop = await getLoopNum();
+                    numLoop = await getLoopNum(key, batchSize);
 
                     loopPreview.value = `current loop: ${i + 1}/${numLoop}`;
                     app.canvas.setDirty(true);
