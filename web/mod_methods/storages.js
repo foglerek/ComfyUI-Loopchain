@@ -36,7 +36,7 @@ export const ImageStorageExportLoop = {
                 const key = findWidgetByName(node, "key");
                 const batchSize = findWidgetByName(node, "batch_size");
                 const loopPreview = findWidgetByName(node, 'loop_preview');
-                let loopEnd = findWidgetByName(node, "loop_end");
+                const loopEnd = findWidgetByName(node, "loop_end");
                 loopPreview.value = 'Iteration: Idle';
                 app.canvas.setDirty(true);
 
@@ -48,11 +48,11 @@ export const ImageStorageExportLoop = {
 
                 // If no loop end is provided, we assume we want to run as many loops as the first
                 // queue execution finds.
-                if (loopEnd === 0) {
-                    loopEnd = numLoop;
+                if (loopEnd.value === 0) {
+                    loopEnd.value = numLoop;
                 }
 
-                for (let i = 0; i < numLoop && i < loopEnd; i++) {
+                for (let i = 0; i < numLoop && i < loopEnd.value; i++) {
                     await executeAndWaitForLoopchain(app, node);
 
                     // Check for new data added to key
