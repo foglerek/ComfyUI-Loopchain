@@ -156,7 +156,7 @@ class ImageToImageStorage:
         return ()
 
     @classmethod
-    def IS_CHANGED(s, image):
+    def IS_CHANGED(s, key, image):
         image_path = folder_paths.get_annotated_filepath(image)
         m = hashlib.sha256()
         with open(image_path, 'rb') as f:
@@ -164,11 +164,12 @@ class ImageToImageStorage:
         return m.digest().hex()
 
     @classmethod
-    def VALIDATE_INPUTS(s, image):
+    def VALIDATE_INPUTS(s, key, image):
         if not folder_paths.exists_annotated_filepath(image):
             return "Invalid image file: {}".format(image)
 
         return True
+
 
 class FolderToImageStorage:
     @classmethod
