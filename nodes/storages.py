@@ -17,7 +17,7 @@ class ImageStorageImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
-            "required": { "key": ("STRING", {"multiline": False}), "image": ("IMAGE", ) } 
+            "required": { "key": ("STRING", {"multiline": False}), "image": ("IMAGE", ) }
         }
 
     CATEGORY = "Loopchain/storage"
@@ -30,7 +30,7 @@ class ImageStorageImport:
             GLOBAL_IMAGE_STORAGE[key] = []
         GLOBAL_IMAGE_STORAGE[key].append(image)
         return {}
-    
+
     @classmethod
     def IS_CHANGED():
         return float("nan")
@@ -40,9 +40,10 @@ class ImageStorageExportLoop:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "key": ("STRING", {"multiline": False}), 
+                "key": ("STRING", {"multiline": False}),
                 "batch_size": ("INT", {"default": 1000, "min": 1}),
                 "loop_idx": ("INT", {"default": 0, "min": 0}),
+                "loop_end": ("INT", {"default": 0, "min": 0}),
             },
             "optional": {
                 "opt_pipeline": ("LOOPCHAIN_PIPELINE", )
@@ -59,7 +60,7 @@ class ImageStorageExportLoop:
         assert GLOBAL_IMAGE_STORAGE[key], f"Image storage {key} doesn't exist."
         dataloader = DataLoader(torch.cat(GLOBAL_IMAGE_STORAGE[key], dim=0), batch_size=batch_size)
         return (list(dataloader)[loop_idx], loop_idx, loop_idx % batch_size)
-    
+
     @classmethod
     def IS_CHANGED():
         return float("nan")
@@ -136,9 +137,9 @@ class FolderToImageStorage:
                 mask = 1. - torch.from_numpy(mask)
             else:
                 mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
-            
+
             GLOBAL_IMAGE_STORAGE[key].append(image)
-        
+
         return {}
 
 
@@ -155,7 +156,7 @@ class LatentStorageImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
-            "required": { "key": ("STRING", {"multiline": False}), "latent": ("LATENT", ) } 
+            "required": { "key": ("STRING", {"multiline": False}), "latent": ("LATENT", ) }
         }
 
     CATEGORY = "Loopchain/storage"
@@ -169,7 +170,7 @@ class LatentStorageImport:
             GLOBAL_LATENT_STORAGE[key] = []
         GLOBAL_LATENT_STORAGE[key].append(latent)
         return {}
-    
+
     @classmethod
     def IS_CHANGED():
         return float("nan")
@@ -178,8 +179,8 @@ class LatentStorageExportLoop:
     @classmethod
     def INPUT_TYPES(s):
         return {
-            "required": { 
-                "key": ("STRING", {"multiline": False}), 
+            "required": {
+                "key": ("STRING", {"multiline": False}),
                 "batch_size": ("INT", {"default": 1000, "min": 1}),
                 "loop_idx": ("INT", {"default": 0, "min": 0})
             },
@@ -198,7 +199,7 @@ class LatentStorageExportLoop:
         assert GLOBAL_LATENT_STORAGE[key], f"Latent storage {key} doesn't exist."
         dataloader = DataLoader(torch.cat(GLOBAL_LATENT_STORAGE[key], dim=0), batch_size=batch_size)
         return (list(dataloader)[loop_idx], loop_idx, loop_idx % batch_size)
-    
+
     @classmethod
     def IS_CHANGED():
         return float("nan")

@@ -23,6 +23,12 @@ export const ImageStorageExportLoop = {
         }
     },
     whenCreated(node, app) {
+        const getLoopNum = async () => {
+            const { result: numLoop } = await fetch(`/loopchain/dataloader_length?type=image&key=${key.value}&batch_size=${batchSize.value}`)
+              .then(re => re.json())
+            return numLoop;
+        }
+
         const queueBtn = node.addWidget('button', `Queue`, 'queue', function () {
             const loopIndex = findWidgetByName(node, 'loop_idx');
             loopIndex.value = 0;
@@ -30,18 +36,28 @@ export const ImageStorageExportLoop = {
                 const key = findWidgetByName(node, "key");
                 const batchSize = findWidgetByName(node, "batch_size");
                 const loopPreview = findWidgetByName(node, 'loop_preview');
+                let loopEnd = findWidgetByName(node, "loop_end");
                 loopPreview.value = 'Iteration: Idle';
                 app.canvas.setDirty(true);
 
-                const { result: numLoop } = await fetch(`/loopchain/dataloader_length?type=image&key=${key.value}&batch_size=${batchSize.value}`)
-                    .then(re => re.json())
+                let numLoop = await getLoopNum();
                 if (numLoop === -1) {
                     loopPreview.value = `"${key.value}" not found. 🤔`
                     return;
                 }
 
-                for (let i = 0; i < numLoop; i++) {
+                // If no loop end is provided, we assume we want to run as many loops as the first
+                // queue execution finds.
+                if (loopEnd === 0) {
+                    loopEnd = numLoop;
+                }
+
+                for (let i = 0; i < numLoop && i < loopEnd; i++) {
                     await executeAndWaitForLoopchain(app, node);
+
+                    // Check for new data added to key
+                    numLoop = await getLoopNum();
+
                     loopPreview.value = `current loop: ${i + 1}/${numLoop}`;
                     app.canvas.setDirty(true);
                     loopIndex.value++;
