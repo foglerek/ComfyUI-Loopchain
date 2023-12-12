@@ -79,13 +79,13 @@ class ImageStorageExport:
 
     CATEGORY = "Loopchain/storage"
     FUNCTION = "execute"
-    RETURN_TYPES = ("IMAGE")
-    RETURN_NAMES = ("IMAGE")
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("IMAGE",)
 
     def execute(self, key, opt_pipeline=None):
         key = key.strip()
         assert GLOBAL_IMAGE_STORAGE[key], f"Image storage {key} doesn't exist."
-        return (list(GLOBAL_IMAGE_STORAGE[key]),)
+        return (torch.cat(GLOBAL_IMAGE_STORAGE[key], dim=0),)
 
     @classmethod
     def IS_CHANGED():
