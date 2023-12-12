@@ -81,6 +81,25 @@ export const ImageStorageExportLoop = {
     }
 }
 export const ImageStorageExport = {
+    beforeDef(nodeType, nodeData, app) {
+        nodeType.prototype.onNodeCreated = function () {
+            this.changeMode(LiteGraph.ALWAYS);
+            const loopPreview = this.addCustomWidget(
+              DEBUG_STRING('loop_preview', 'Iteration: Idle')
+            );
+            loopPreview.parent = this;
+
+            this.onRemoved = () => {
+                for (const w of this.widgets) {
+                    if (w.canvas) {
+                        w.canvas.remove()
+                    }
+                    w.onRemoved?.()
+                }
+                app.canvas.setDirty(true)
+            }
+        }
+    },
     whenCreated(node, app) {
         node.addWidget('button', `Queue`, 'queue', function () {
             return (async () => await executeAndWaitForLoopchain(app, node))();
