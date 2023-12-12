@@ -65,6 +65,32 @@ class ImageStorageExportLoop:
     def IS_CHANGED():
         return float("nan")
 
+class ImageStorageExport:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "key": ("STRING", {"multiline": False}),
+            },
+            "optional": {
+                "opt_pipeline": ("LOOPCHAIN_PIPELINE", )
+            }
+        }
+
+    CATEGORY = "Loopchain/storage"
+    FUNCTION = "execute"
+    RETURN_TYPES = ("IMAGE")
+    RETURN_NAMES = ("IMAGE")
+
+    def execute(self, key, opt_pipeline=None):
+        key = key.strip()
+        assert GLOBAL_IMAGE_STORAGE[key], f"Image storage {key} doesn't exist."
+        return (list(GLOBAL_IMAGE_STORAGE[key]))
+
+    @classmethod
+    def IS_CHANGED():
+        return float("nan")
+
 class ImageStorageReset:
     @classmethod
     def INPUT_TYPES(s):
