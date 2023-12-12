@@ -80,6 +80,13 @@ export const ImageStorageExportLoop = {
         }, 0)
     }
 }
+export const ImageStorageExport = {
+    whenCreated(node, app) {
+        node.addWidget('button', `Queue`, 'queue', function () {
+            return (async () => await executeAndWaitForLoopchain(app, node))();
+        });
+    }
+}
 export const ImageStorageReset = {
     whenCreated(node, app) {
         node.addWidget('button', `Queue`, 'queue', function () {
