@@ -55,7 +55,7 @@ class ImageStorageExportLoop:
     RETURN_TYPES = ("IMAGE", "INT", "INT")
     RETURN_NAMES = ("IMAGE", "LOOP IDX (INT)", "IDX_IN_BATCH (INT)")
 
-    def execute(self, key, batch_size, loop_idx, opt_pipeline=None):
+    def execute(self, key, batch_size, loop_idx, loop_end, opt_pipeline=None):
         key = key.strip()
         assert GLOBAL_IMAGE_STORAGE[key], f"Image storage {key} doesn't exist."
         dataloader = DataLoader(torch.cat(GLOBAL_IMAGE_STORAGE[key], dim=0), batch_size=batch_size)
