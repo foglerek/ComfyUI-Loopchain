@@ -53,12 +53,13 @@ export const ImageStorageExportLoop = {
                 }
 
                 for (let i = 0; i < numLoop && i < loopEnd.value; i++) {
+                    loopPreview.value = `current loop: ${i + 1}/${numLoop}(?) (Max: ${loopEnd.value})`;
+
                     await executeAndWaitForLoopchain(app, node);
 
                     // Check for new data added to key
                     numLoop = await getLoopNum(key, batchSize);
 
-                    loopPreview.value = `current loop: ${i + 1}/${numLoop}`;
                     app.canvas.setDirty(true);
                     loopIndex.value++;
                 }
