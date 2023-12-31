@@ -238,7 +238,20 @@ class LatentStorageImport:
         key = key.strip()
         if key not in GLOBAL_LATENT_STORAGE:
             GLOBAL_LATENT_STORAGE[key] = []
-        GLOBAL_LATENT_STORAGE[key].append(latent)
+
+        num_samples = len(latent["samples"])
+        num_noise_masks = len(latent["noise_mask"])
+
+        chunked_samples = latent["samples"].chunk(num_samples, dim=0)
+        chunked_noise_mask = latent["noise_mask"].chunk(num_noise_masks, dim=0)
+
+        for idx, sample in enumerate(chunked_samples):
+            noise_mask = chunked_noise_mask[idx] if idx < num_noise_masks else chunked_noise_mask[0]
+            GLOBAL_LATENT_STORAGE[key].append({
+                "samples": sample,
+                "noise_mask": noise_mask
+            })
+
         return {}
 
     @classmethod
@@ -268,8 +281,7 @@ class LatentStorageExportLoop:
     def execute(self, key, batch_size, loop_idx, loop_end, opt_pipeline=None):
         key = key.strip()
         assert GLOBAL_LATENT_STORAGE[key], f"Latent storage {key} doesn't exist."
-        dataloader = DataLoader(torch.cat(GLOBAL_LATENT_STORAGE[key], dim=0), batch_size=batch_size)
-        return (list(dataloader)[loop_idx], loop_idx, loop_idx % batch_size)
+        return (GLOBAL_LATENT_STORAGE[key][loop_idx], loop_idx, loop_idx % batch_size)
 
     @classmethod
     def IS_CHANGED():
@@ -327,7 +339,15 @@ async def get_storage_length(request):
             "result": -1
         })
 
-    dataloader = DataLoader(torch.cat(storage[storage_key], dim=0), batch_size=batch_size)
-    return web.json_response({
-        "result": len(dataloader)
-    })
+    if storage_type == "image":
+        dataloader = DataLoader(torch.cat(storage[storage_key], dim=0), batch_size=batch_size)
+        return web.json_response({
+            "result": len(dataloader)
+        })
+
+    if storage_type == "latent":
+        return web.json_response({
+            "result": len(storage[storage_key])
+        })
+
+    return None
