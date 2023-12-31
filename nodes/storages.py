@@ -252,7 +252,8 @@ class LatentStorageExportLoop:
             "required": {
                 "key": ("STRING", {"multiline": False}),
                 "batch_size": ("INT", {"default": 1000, "min": 1}),
-                "loop_idx": ("INT", {"default": 0, "min": 0})
+                "loop_idx": ("INT", {"default": 0, "min": 0}),
+                "loop_end": ("INT", {"default": 0, "min": 0}),
             },
             "optional": {
                 "opt_pipeline": ("LOOPCHAIN_PIPELINE", )
@@ -264,7 +265,7 @@ class LatentStorageExportLoop:
     RETURN_TYPES = ("LATENT", "INT", "INT")
     RETURN_NAMES = ("LATENT", "LOOP IDX (INT)", "IDX_IN_BATCH (INT)")
 
-    def execute(self, key, batch_size, loop_idx, opt_pipeline=None):
+    def execute(self, key, batch_size, loop_idx, loop_end, opt_pipeline=None):
         key = key.strip()
         assert GLOBAL_LATENT_STORAGE[key], f"Latent storage {key} doesn't exist."
         dataloader = DataLoader(torch.cat(GLOBAL_LATENT_STORAGE[key], dim=0), batch_size=batch_size)
