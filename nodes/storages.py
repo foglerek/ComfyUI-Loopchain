@@ -291,7 +291,6 @@ class LatentStorageReset:
     FUNCTION = "execute"
 
     def execute(self, key_list):
-        key = key.strip()
         keys = GLOBAL_LATENT_STORAGE.keys() if key_list.strip() == '*' else ','.split(key_list)
         keys = list(map(lambda key: key.strip(), keys))
         for key in keys:
