@@ -1,6 +1,5 @@
-import { api } from '/scripts/api.js'
 import * as shared from './comfy_shared.js'
-import { app } from '/scripts/app.js'
+import { app } from '../../scripts/app.js'
 
 
 

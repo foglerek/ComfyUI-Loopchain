@@ -1,5 +1,5 @@
-import { app } from '/scripts/app.js'
-import { ComfyWidgets } from "/scripts/widgets.js"
+import { app } from '../../scripts/app.js'
+import { ComfyWidgets } from "../../scripts/widgets.js"
 import { DEBUG_STRING, getNodeByLink, enableOnlyRelatedNodes, findWidgetByName } from "./utils.js"
 import * as empty_latent_loop from "./mod_methods/empty_latent_loop.js"
 import * as storages from "./mod_methods/storages.js"

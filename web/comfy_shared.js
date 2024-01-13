@@ -7,17 +7,17 @@
  *
  */
 
- import { app } from '/scripts/app.js'
+ import { app } from '../../scripts/app.js'
 
  export const log = (...args) => {
    if (window.MTB?.DEBUG) {
      console.debug(...args)
    }
  }
- 
+
  //- WIDGET UTILS
  export const CONVERTED_TYPE = 'converted-widget'
- 
+
  export function offsetDOMWidget(
    widget,
    ctx,
@@ -35,7 +35,7 @@
      )
      .multiplySelf(ctx.getTransform())
      .translateSelf(margin, margin + widgetY)
- 
+
    const scale = new DOMMatrix().scaleSelf(transform.a, transform.d)
    Object.assign(widget.inputEl.style, {
      transformOrigin: '0 0',
@@ -45,14 +45,14 @@
      width: `${widgetWidth - margin * 2}px`,
      // height: `${(widget.parent?.inputHeight || 32) - (margin * 2)}px`,
      height: `${(height || widget.parent?.inputHeight || 32) - margin * 2}px`,
- 
+
      position: 'absolute',
      background: !node.color ? '' : node.color,
      color: !node.color ? '' : 'white',
      zIndex: 5, //app.graph._nodes.indexOf(node),
    })
  }
- 
+
  /**
   * Extracts the type and link type from a widget config object.
   * @param {*} config
@@ -68,7 +68,7 @@
    }
    return { type, linkType }
  }
- 
+
  export const dynamic_connection = (
    node,
    index,
@@ -87,13 +87,13 @@
        }
      }
      node.removeInput(index)
- 
+
      // make inputs sequential again
      for (let i = 0; i < node.inputs.length; i++) {
        node.inputs[i].label = `${connectionPrefix}${i + 1}`
      }
    }
- 
+
    // add an extra input
    if (node.inputs[node.inputs.length - 1].link != undefined) {
      log(
@@ -101,14 +101,14 @@
          node.inputs.length + 1
        })`
      )
- 
+
      node.addInput(
        `${connectionPrefix}${node.inputs.length + 1}`,
        connectionType
      )
    }
  }
- 
+
  /**
   * Appends a callback to the extra menu options of a given node type.
   * @param {*} nodeType
@@ -122,7 +122,7 @@
      return r
    }
  }
- 
+
  export function hideWidget(node, widget, suffix = '') {
    widget.origType = widget.type
    widget.hidden = true
@@ -140,7 +140,7 @@
        ? widget.origSerializeValue()
        : widget.value
    }
- 
+
    // Hide any linked widgets, e.g. seed+seedControl
    if (widget.linkedWidgets) {
      for (const w of widget.linkedWidgets) {
@@ -148,16 +148,16 @@
      }
    }
  }
- 
+
  export function showWidget(widget) {
    widget.type = widget.origType
    widget.computeSize = widget.origComputeSize
    widget.serializeValue = widget.origSerializeValue
- 
+
    delete widget.origType
    delete widget.origComputeSize
    delete widget.origSerializeValue
- 
+
    // Hide any linked widgets, e.g. seed+seedControl
    if (widget.linkedWidgets) {
      for (const w of widget.linkedWidgets) {
@@ -165,39 +165,39 @@
      }
    }
  }
- 
+
  export function convertToWidget(node, widget) {
    showWidget(widget)
    const sz = node.size
    node.removeInput(node.inputs.findIndex((i) => i.widget?.name === widget.name))
- 
+
    for (const widget of node.widgets) {
      widget.last_y -= LiteGraph.NODE_SLOT_HEIGHT
    }
- 
+
    // Restore original size but grow if needed
    node.setSize([Math.max(sz[0], node.size[0]), Math.max(sz[1], node.size[1])])
  }
- 
+
  export function convertToInput(node, widget, config) {
    hideWidget(node, widget)
- 
+
    const { linkType } = getWidgetType(config)
- 
+
    // Add input and store widget config for creating on primitive node
    const sz = node.size
    node.addInput(widget.name, linkType, {
      widget: { name: widget.name, config },
    })
- 
+
    for (const widget of node.widgets) {
      widget.last_y += LiteGraph.NODE_SLOT_HEIGHT
    }
- 
+
    // Restore original size but grow if needed
    node.setSize([Math.max(sz[0], node.size[0]), Math.max(sz[1], node.size[1])])
  }
- 
+
  export function hideWidgetForGood(node, widget, suffix = '') {
    widget.origType = widget.type
    widget.origComputeSize = widget.computeSize
@@ -212,7 +212,7 @@
    //     }
    //     return widget.origSerializeValue ? widget.origSerializeValue() : widget.value;
    // };
- 
+
    // Hide any linked widgets, e.g. seed+seedControl
    if (widget.linkedWidgets) {
      for (const w of widget.linkedWidgets) {
@@ -220,7 +220,7 @@
      }
    }
  }
- 
+
  export function fixWidgets(node) {
    if (node.inputs) {
      for (const input of node.inputs) {
@@ -241,7 +241,7 @@
              hideWidget(node, w)
            } else {
              log(`converting to widget ${w}`)
- 
+
              convertToWidget(node, input)
            }
          }
@@ -267,13 +267,13 @@
      widget.callback(widget.value, app.canvas, node, pos, event)
    }
  }
- 
+
  //- COLOR UTILS
  export function isColorBright(rgb, threshold = 240) {
    const brightess = getBrightness(rgb)
    return brightess > threshold
  }
- 
+
  function getBrightness(rgbObj) {
    return Math.round(
      (parseInt(rgbObj[0]) * 299 +
@@ -282,11 +282,11 @@
        1000
    )
  }
- 
+
  //- HTML / CSS UTILS
  export function defineClass(className, classStyles) {
    const styleSheets = document.styleSheets
- 
+
    // Helper function to check if the class exists in a style sheet
    function classExistsInStyleSheet(styleSheet) {
      const rules = styleSheet.rules || styleSheet.cssRules
@@ -297,7 +297,7 @@
      }
      return false
    }
- 
+
    // Check if the class is already defined in any of the style sheets
    let classExists = false
    for (const styleSheet of styleSheets) {
@@ -306,7 +306,7 @@
        break
      }
    }
- 
+
    // If the class doesn't exist, add the new class definition to the first style sheet
    if (!classExists) {
      if (styleSheets[0].insertRule) {
