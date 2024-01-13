@@ -24,7 +24,7 @@ export const ImageStorageExportLoop = {
     },
     whenCreated(node, app) {
         const getLoopNum = async (key, batchSize) => {
-            const { result: numLoop } = await fetch(`/loopchain/dataloader_length?type=image&key=${key.value}&batch_size=${batchSize.value}`)
+            const { result: numLoop } = await fetch(`./loopchain/dataloader_length?type=image&key=${key.value}&batch_size=${batchSize.value}`)
               .then(re => re.json())
             return numLoop;
         }
@@ -119,7 +119,7 @@ export const LatentStorageExportLoop = {
     },
     whenCreated(node, app) {
         const getLoopNum = async (key, batchSize) => {
-            const { result: numLoop } = await fetch(`/loopchain/dataloader_length?type=latent&key=${key.value}&batch_size=${batchSize.value}`)
+            const { result: numLoop } = await fetch(`./loopchain/dataloader_length?type=latent&key=${key.value}&batch_size=${batchSize.value}`)
               .then(re => re.json())
             return numLoop;
         }
